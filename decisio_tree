@@ -1,0 +1,62 @@
+# Import required libraries
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+
+# Create the traffic dataset
+traffic_data = {
+    'Light Condition': ['Day', 'Night', 'Day', 'Night', 'Day', 'Night'],
+    'Weather Condition': ['Clear', 'Rain', 'Clear', 'Fog']}
+
+# Import required libraries
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+
+# Create the traffic dataset
+traffic_data = {
+    'Traffic Volume': [100, 150, 200, 300, 400, 250, 100, 350, 500, 160],
+    'Weather': ['Clear', 'Rainy', 'Clear', 'Rainy', 'Clear', 'Clear', 'Foggy', 'Clear', 'Rainy', 'Clear'],
+    'Time of Day': ['Morning', 'Afternoon', 'Evening', 'Morning', 'Afternoon', 'Evening', 'Morning', 'Afternoon', 'Evening', 'Morning'],
+    'Accident': ['No', 'Yes', 'No', 'Yes', 'Yes', 'No', 'No', 'Yes', 'No', 'No']
+}
+
+# Convert data to DataFrame
+df_traffic = pd.DataFrame(traffic_data)
+
+# Encode categorical variables
+df_traffic['Weather'] = df_traffic['Weather'].map({'Clear': 1, 'Rainy': 0, 'Foggy': 0})
+df_traffic['Time of Day'] = df_traffic['Time of Day'].map({'Morning': 0, 'Afternoon': 1, 'Evening': 2})
+df_traffic['Accident'] = df_traffic['Accident'].map({'No': 0, 'Yes': 1})
+
+# Features and target
+X_traffic = df_traffic[['Traffic Volume', 'Weather', 'Time of Day']]
+y_traffic = df_traffic['Accident']
+
+# Split the dataset into training and testing sets
+X_train_traffic, X_test_traffic, y_train_traffic, y_test_traffic = train_test_split(X_traffic, y_traffic, test_size=0.3, random_state=42)
+
+# Create and train the Decision Tree model
+traffic_model = DecisionTreeClassifier()
+traffic_model.fit(X_train_traffic, y_train_traffic)
+
+# Make predictions
+y_pred_traffic = traffic_model.predict(X_test_traffic)
+accuracy_traffic = accuracy_score(y_test_traffic, y_pred_traffic)
+
+print(f"Accuracy of Traffic Dataset: {accuracy_traffic:.2f}")
+
+# Visualize the Decision Tree
+plt.figure(figsize=(12, 8))
+plot_tree(traffic_model, feature_names=X_traffic.columns, class_names=['No Accident', 'Accident'], filled=True)
+plt.title("Decision Tree for Traffic Accident Prediction")
+plt.show()
+
+# Test with a new example
+new_traffic_data = [[250, 1, 0]] # Traffic Volume, Weather: Clear, Time of Day: Morning
+predicted_accident = traffic_model.predict(new_traffic_data)
+print("Predicted Accident (1=Yes, 0=No):", predicted_accident[0])
